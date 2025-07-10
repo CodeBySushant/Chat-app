@@ -47,11 +47,14 @@ function Login({ onLogin }) {
         <button type="submit">Login</button>
       </form>
       {error && <p>{error}</p>}
+<<<<<<< HEAD
 
       {/* Add Google login button here */}
       <a href="http://localhost:5000/api/auth/google" style={{ display: 'inline-block', marginTop: '1rem' }}>
         <button type="button">Login with Google</button>
       </a>
+=======
+>>>>>>> origin/main
     </div>
   );
 }

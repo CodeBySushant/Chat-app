@@ -8,6 +8,7 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
+<<<<<<< HEAD
     // 1. Check if user info is already saved locally
     const storedUser = localStorage.getItem('username');
     const storedToken = localStorage.getItem('token');
@@ -31,12 +32,20 @@ function App() {
       // Clean URL by removing query params
       window.history.replaceState({}, document.title, '/');
     }
+=======
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) setUser(storedUser);
+>>>>>>> origin/main
   }, []);
 
   if (!user) {
     return showRegister ? (
       <>
+<<<<<<< HEAD
         <Register onRegister={setUser} />
+=======
+        <Register />
+>>>>>>> origin/main
         <button onClick={() => setShowRegister(false)}>Go to Login</button>
       </>
     ) : (
