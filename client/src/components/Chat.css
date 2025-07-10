@@ -5,9 +5,10 @@
   margin: 50px auto;
   padding: 30px 40px;
   border-radius: 16px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   background: #ffffff;
+  color: #222222;
   position: relative;
   display: flex;
   flex-direction: column;

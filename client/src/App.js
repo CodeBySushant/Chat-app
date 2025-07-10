@@ -8,7 +8,6 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
-    // 1. Check if user info is already saved locally
     const storedUser = localStorage.getItem('username');
     const storedToken = localStorage.getItem('token');
 
@@ -17,33 +16,25 @@ function App() {
       return;
     }
 
-    // 2. Check URL params for Google OAuth redirect with token & username
+    // Check for Google OAuth redirect
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     const username = params.get('username');
 
     if (token && username) {
-      // Save token and username locally
       localStorage.setItem('token', token);
       localStorage.setItem('username', username);
       setUser(username);
-
-      // Clean URL by removing query params
       window.history.replaceState({}, document.title, '/');
     }
   }, []);
 
+  // 🔁 Switch between Login/Register screens
   if (!user) {
     return showRegister ? (
-      <>
-        <Register onRegister={setUser} />
-        <button onClick={() => setShowRegister(false)}>Go to Login</button>
-      </>
+      <Register onSwitch={() => setShowRegister(false)} />
     ) : (
-      <>
-        <Login onLogin={setUser} />
-        <button onClick={() => setShowRegister(true)}>Go to Register</button>
-      </>
+      <Login onLogin={setUser} onSwitch={() => setShowRegister(true)} />
     );
   }
 
