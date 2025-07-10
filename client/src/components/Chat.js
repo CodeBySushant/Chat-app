@@ -9,6 +9,11 @@ function Chat({ username }) {
   const [chat, setChat] = useState([]);
   const [room, setRoom] = useState('');
   const [joined, setJoined] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Initialize darkMode state from localStorage (if exists)
+    const saved = localStorage.getItem('darkMode');
+    return saved === 'true'; // saved is string, convert to boolean
+  });
 
   useEffect(() => {
     socket.on('chat-message', (data) => {
@@ -17,6 +22,11 @@ function Chat({ username }) {
 
     return () => socket.off('chat-message');
   }, []);
+
+  // Save darkMode preference whenever it changes
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   const sendMessage = () => {
     if (!message.trim()) return;
@@ -38,9 +48,14 @@ function Chat({ username }) {
     window.location.reload();
   };
 
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
+
   return (
-    <div className="chat-wrapper">
+    <div className={`chat-wrapper ${darkMode ? 'dark' : ''}`}>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
+      <button className="dark-mode-toggle" onClick={toggleDarkMode}>
+        {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
 
       {!joined ? (
         <div className="login-box">
