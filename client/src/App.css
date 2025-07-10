@@ -1,0 +1,27 @@
+/* src/App.css */
+.chat-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+}
+
+.chat-box {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #eee;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+
+input[type='text'] {
+  flex: 1;
+  padding: 10px;
+}
