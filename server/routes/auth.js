@@ -1,17 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-<<<<<<< HEAD
-const passport = require('passport'); // ✅ Added passport import
+const passport = require('passport'); // Added passport import
 const User = require('../models/User');
-const authenticateToken = require('../middleware/auth'); // ✅ Moved up
+const authenticateToken = require('../middleware/auth'); // Moved up
 
 const router = express.Router();
-=======
-const User = require('../models/User');
-const router = express.Router();
-
->>>>>>> origin/main
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // 📌 Register Route
@@ -50,7 +44,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 // 🌐 Google OAuth Route
 router.get('/google', passport.authenticate('google', {
   scope: ['profile']
@@ -72,14 +65,3 @@ router.get('/protected', authenticateToken, (req, res) => {
 });
 
 module.exports = router;
-=======
-module.exports = router;
-
-
-// Add this in routes/auth.js (bottom of the file)
-const authenticateToken = require('../middleware/auth');
-
-router.get('/protected', authenticateToken, (req, res) => {
-  res.json({ message: 'You have access!', user: req.user });
-});
->>>>>>> origin/main

@@ -17,7 +17,6 @@ function Login({ onLogin }) {
     const data = await res.json();
 
     if (res.ok) {
-      // Save token in localStorage or state
       localStorage.setItem('token', data.token);
       localStorage.setItem('username', data.username);
       onLogin(data.username);
@@ -47,14 +46,14 @@ function Login({ onLogin }) {
         <button type="submit">Login</button>
       </form>
       {error && <p>{error}</p>}
-<<<<<<< HEAD
 
-      {/* Add Google login button here */}
-      <a href="http://localhost:5000/api/auth/google" style={{ display: 'inline-block', marginTop: '1rem' }}>
+      {/* ✅ Google Login Button */}
+      <a
+        href="http://localhost:5000/api/auth/google"
+        style={{ display: 'inline-block', marginTop: '1rem' }}
+      >
         <button type="button">Login with Google</button>
       </a>
-=======
->>>>>>> origin/main
     </div>
   );
 }

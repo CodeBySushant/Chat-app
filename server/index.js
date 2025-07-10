@@ -4,15 +4,10 @@ const { Server } = require('socket.io');
 const amqp = require('amqplib');
 const app = express();
 const cors = require('cors');
-<<<<<<< HEAD
 const session = require('express-session');
 const passport = require('passport');
 require('dotenv').config();
 require('./config/passport');
-
-=======
-require('dotenv').config();
->>>>>>> origin/main
 const mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URL)
@@ -24,19 +19,22 @@ const authMiddleware = require('./middleware/auth');
 
 app.use(cors());
 app.use(express.json()); // Important for reading JSON bodies
-<<<<<<< HEAD
+
+// 🔐 Express session setup
 app.use(session({
-  secret: 'keyboard cat', // change to a secure secret in production
+  secret: 'keyboard cat', // ⚠️ Replace with a strong secret in production
   resave: false,
   saveUninitialized: false
 }));
+
+// 🔐 Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
 
-=======
->>>>>>> origin/main
+// 🛣️ Auth routes
 app.use('/api/auth', authRoutes);
 
+// 🔌 Create HTTP + WebSocket server
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
@@ -52,7 +50,7 @@ async function connectRabbitMQ() {
   channel = await conn.createChannel();
   await channel.assertQueue('chat');
 
-  // ✅ Important: Consume from RabbitMQ and emit to room
+  // ✅ Consume messages and emit to WebSocket
   channel.consume('chat', (msg) => {
     const data = JSON.parse(msg.content.toString());
     io.to(data.room).emit('chat-message', data);
