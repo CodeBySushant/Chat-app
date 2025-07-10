@@ -4,10 +4,9 @@ import './Chat.css';
 
 const socket = io('http://localhost:5000');
 
-function Chat() {
+function Chat({ username }) {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
-  const [username, setUsername] = useState('');
   const [room, setRoom] = useState('');
   const [joined, setJoined] = useState(false);
 
@@ -26,38 +25,39 @@ function Chat() {
   };
 
   const handleJoin = () => {
-    if (username.trim() && room.trim()) {
+    if (room.trim()) {
       socket.emit('join-room', { username, room });
       setJoined(true);
-      setChat([]); // clear chat when joining
+      setChat([]);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    window.location.reload();
   };
 
   return (
     <div className="chat-wrapper">
+      <button className="logout-button" onClick={handleLogout}>Logout</button>
+
       {!joined ? (
         <div className="login-box">
-          <h2>Enter Your Name & Room</h2>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Your name"
-          />
+          <h2>Welcome, {username}</h2>
           <input
             type="text"
             value={room}
             onChange={(e) => setRoom(e.target.value)}
-            placeholder="Room name"
+            placeholder="Enter room name"
             style={{ marginTop: '10px' }}
           />
-          <button onClick={handleJoin}>Join Chat</button>
+          <button onClick={handleJoin}>Join Room</button>
         </div>
       ) : (
         <div className="chat-box">
           <h2>
-            Welcome, {username} 👋 <br />
-            Room: {room}
+            {username} in Room: {room}
           </h2>
           <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {chat.map((msg, idx) => (
