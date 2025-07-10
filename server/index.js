@@ -4,7 +4,11 @@ const { Server } = require('socket.io');
 const amqp = require('amqplib');
 const app = express();
 const cors = require('cors');
+const session = require('express-session');
+const passport = require('passport');
 require('dotenv').config();
+require('./config/passport');
+
 const mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URL)
@@ -16,6 +20,14 @@ const authMiddleware = require('./middleware/auth');
 
 app.use(cors());
 app.use(express.json()); // Important for reading JSON bodies
+app.use(session({
+  secret: 'keyboard cat', // change to a secure secret in production
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use('/api/auth', authRoutes);
 
 const server = http.createServer(app);

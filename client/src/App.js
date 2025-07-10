@@ -8,14 +8,35 @@ function App() {
   const [showRegister, setShowRegister] = useState(false);
 
   useEffect(() => {
+    // 1. Check if user info is already saved locally
     const storedUser = localStorage.getItem('username');
-    if (storedUser) setUser(storedUser);
+    const storedToken = localStorage.getItem('token');
+
+    if (storedUser && storedToken) {
+      setUser(storedUser);
+      return;
+    }
+
+    // 2. Check URL params for Google OAuth redirect with token & username
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const username = params.get('username');
+
+    if (token && username) {
+      // Save token and username locally
+      localStorage.setItem('token', token);
+      localStorage.setItem('username', username);
+      setUser(username);
+
+      // Clean URL by removing query params
+      window.history.replaceState({}, document.title, '/');
+    }
   }, []);
 
   if (!user) {
     return showRegister ? (
       <>
-        <Register />
+        <Register onRegister={setUser} />
         <button onClick={() => setShowRegister(false)}>Go to Login</button>
       </>
     ) : (
