@@ -4,6 +4,11 @@ const { Server } = require('socket.io');
 const amqp = require('amqplib');
 const cors = require('cors');
 require('dotenv').config();
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch((err) => console.log('❌ MongoDB connection error:', err));
 
 const app = express();
 const server = http.createServer(app);
@@ -16,17 +21,15 @@ const RABBIT_URL = process.env.RABBIT_URL || 'amqp://localhost';
 
 let channel;
 
-// Connect to RabbitMQ
 async function connectRabbitMQ() {
   const conn = await amqp.connect(RABBIT_URL);
   channel = await conn.createChannel();
   await channel.assertQueue('chat');
-  console.log('✅ Connected to RabbitMQ');
 
-  // Consume messages
+  // ✅ Important: Consume from RabbitMQ and emit to room
   channel.consume('chat', (msg) => {
     const data = JSON.parse(msg.content.toString());
-    io.emit('chat-message', data);
+    io.to(data.room).emit('chat-message', data);
     channel.ack(msg);
   });
 }
@@ -44,16 +47,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('send-message', (data) => {
-      // Send to RabbitMQ with room info
       channel.sendToQueue('chat', Buffer.from(JSON.stringify({ ...data, room })));
     });
-  });
-
-  // Consume from RabbitMQ and emit to room
-  channel.consume('chat', (msg) => {
-    const data = JSON.parse(msg.content.toString());
-    io.to(data.room).emit('chat-message', data);
-    channel.ack(msg);
   });
 
   socket.on('disconnect', () => {
@@ -61,3 +56,17 @@ io.on('connection', (socket) => {
   });
 });
 
+async function startServer() {
+  try {
+    await connectRabbitMQ();
+    console.log('✅ Connected to RabbitMQ');
+
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ Failed to start server:', err);
+  }
+}
+
+startServer();

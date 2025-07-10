@@ -8,6 +8,7 @@ function Chat() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
   const [username, setUsername] = useState('');
+  const [room, setRoom] = useState('');
   const [joined, setJoined] = useState(false);
 
   useEffect(() => {
@@ -25,26 +26,40 @@ function Chat() {
   };
 
   const handleJoin = () => {
-    if (username.trim()) setJoined(true);
+    if (username.trim() && room.trim()) {
+      socket.emit('join-room', { username, room });
+      setJoined(true);
+      setChat([]); // clear chat when joining
+    }
   };
 
   return (
     <div className="chat-wrapper">
       {!joined ? (
         <div className="login-box">
-          <h2>Enter Your Name</h2>
+          <h2>Enter Your Name & Room</h2>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Your name"
           />
+          <input
+            type="text"
+            value={room}
+            onChange={(e) => setRoom(e.target.value)}
+            placeholder="Room name"
+            style={{ marginTop: '10px' }}
+          />
           <button onClick={handleJoin}>Join Chat</button>
         </div>
       ) : (
         <div className="chat-box">
-          <h2>Welcome, {username} 👋</h2>
-          <div className="chat-messages">
+          <h2>
+            Welcome, {username} 👋 <br />
+            Room: {room}
+          </h2>
+          <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {chat.map((msg, idx) => (
               <div key={idx} className={`msg ${msg.user === username ? 'me' : ''}`}>
                 <strong>{msg.user}: </strong>
@@ -52,7 +67,7 @@ function Chat() {
               </div>
             ))}
           </div>
-          <div className="chat-input">
+          <div className="chat-input" style={{ marginTop: '10px' }}>
             <input
               type="text"
               value={message}
