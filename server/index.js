@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const amqp = require('amqplib');
+const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
@@ -10,7 +11,13 @@ mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.log('❌ MongoDB connection error:', err));
 
-const app = express();
+const authRoutes = require('./routes/auth');
+const authMiddleware = require('./middleware/auth');
+
+app.use(cors());
+app.use(express.json()); // Important for reading JSON bodies
+app.use('/api/auth', authRoutes);
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
