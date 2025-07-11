@@ -71,9 +71,9 @@ function Login({ onLogin, onSwitch }) {
             </svg>
             Google
           </a>
-          <a href="https://www.buymeacoffee.com/yourusername" className="oauth-btn coffee-btn">
+          <a href="https://www.buymeacoffee.com/itsofficialsushant" className="oauth-btn coffee-btn">
             <img
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+              src="/buymeacoffee.webp"
               alt="Buy Me a Coffee"
               className="coffee-logo"
             />
