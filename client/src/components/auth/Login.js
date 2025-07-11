@@ -5,6 +5,7 @@ function Login({ onLogin, onSwitch }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,9 +22,18 @@ function Login({ onLogin, onSwitch }) {
       localStorage.setItem('token', data.token);
       localStorage.setItem('username', data.username);
       onLogin(data.username);
+      setError(''); // Clear error on successful login
     } else {
       setError(data.error || 'Login failed');
+      // Clear error after 4 seconds
+      setTimeout(() => {
+        setError('');
+      }, 4000);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -60,17 +70,24 @@ function Login({ onLogin, onSwitch }) {
             onChange={e => setUsername(e.target.value)}
             required
           />
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-container">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              className="toggle-password"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
           <button type="submit" className="primary-btn">Log in</button>
         </form>
-
-        <a className="passkey-link" href="#">Use passkey instead</a>
 
         {error && <p className="error-msg">{error}</p>}
 
