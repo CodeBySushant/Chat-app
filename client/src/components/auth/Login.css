@@ -169,7 +169,7 @@ body {
 }
 
 .error-msg {
-  color: #ff6666; /* Light red color */
+  color: #ff6666 !important; /* Light red with !important to override other styles */
   margin-top: 10px;
   font-size: 14px;
 }

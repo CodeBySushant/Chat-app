@@ -89,7 +89,7 @@ function Login({ onLogin, onSwitch }) {
           <button type="submit" className="primary-btn">Log in</button>
         </form>
 
-        {error && <p className="error-msg">{error}</p>}
+        {error && <p className="error-msg" style={{ color: '#ff6666' }}>{error}</p>}
 
         <p className="signup-link">
           Don’t have an account?{' '}
