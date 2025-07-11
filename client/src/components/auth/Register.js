@@ -32,35 +32,47 @@ function Register({ onSwitch }) {
   return (
     <div className="register-container">
       <div className="register-card">
-        <h2>Create your account</h2>
-        <p>Start chatting by creating your account</p>
+        <h2>Create Your Account</h2>
+        <p className="subtitle">Join us and start chatting today!</p>
 
         <form onSubmit={handleRegister} className="register-form">
-          <input
-            type="text"
-            placeholder="Choose a username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Create a password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" className="primary-btn">Sign Up →</button>
+          <div className="input-group">
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              placeholder="Choose a username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              placeholder="Create a password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="primary-btn">
+            Sign Up
+          </button>
         </form>
 
         {message && (
-          <p className={`message-msg ${success ? 'success' : 'error'}`}>{message}</p>
+          <p className={`message ${success ? 'success' : 'error'}`}>
+            {message}
+          </p>
         )}
 
         <p className="switch-link">
           Already have an account?{' '}
           <button type="button" className="link-button" onClick={onSwitch}>
-            Login
+            Log In
           </button>
         </p>
       </div>
