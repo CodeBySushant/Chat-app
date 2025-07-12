@@ -2,6 +2,9 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const amqp = require('amqplib');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 const app = express();
 const cors = require('cors');
 const session = require('express-session');
@@ -34,7 +37,33 @@ app.use(passport.session());
 // 🛣️ Auth routes
 app.use('/api/auth', authRoutes);
 
-// 🔌 Create HTTP + WebSocket server
+// --- Multer Setup for File Uploads ---
+
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
+
+// Upload route
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).send('No file uploaded');
+  const fileUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+  res.json({ url: fileUrl });
+});
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(uploadDir));
+
+// --- HTTP + WebSocket setup ---
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
@@ -78,7 +107,7 @@ io.on('connection', (socket) => {
       channel.sendToQueue('chat', Buffer.from(JSON.stringify({ ...data, room })));
     });
 
-    // ✅ Typing Indicator
+    // Typing indicator events
     socket.on('typing', ({ user, room }) => {
       socket.to(room).emit('user-typing', { user });
     });

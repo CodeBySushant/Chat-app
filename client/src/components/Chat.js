@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './Chat.css';
 
@@ -14,6 +14,8 @@ function Chat({ username }) {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true';
   });
+  const [image, setImage] = useState(null);
+  const typingTimeoutRef = useRef(null);
 
   useEffect(() => {
     socket.on('chat-message', (data) => {
@@ -43,14 +45,14 @@ function Chat({ username }) {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
-  let typingTimeout;
   const handleTyping = (e) => {
     setMessage(e.target.value);
 
     socket.emit('typing', { user: username, room });
 
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
       socket.emit('stop-typing', { user: username, room });
     }, 1000);
   };
@@ -60,6 +62,35 @@ function Chat({ username }) {
     socket.emit('send-message', { user: username, message, room });
     setMessage('');
     socket.emit('stop-typing', { user: username, room });
+  };
+
+  const handleImageUpload = async () => {
+    if (!image) return;
+
+    const formData = new FormData();
+    formData.append('image', image);
+
+    try {
+      const res = await fetch('http://localhost:5000/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error('Upload failed');
+
+      const data = await res.json();
+
+      // Send image message with <img> tag as message content
+      socket.emit('send-message', {
+        user: username,
+        message: `<img src="${data.url}" alt="uploaded" style="max-width: 200px;" />`,
+        room,
+      });
+
+      setImage(null);
+    } catch (err) {
+      console.error('Upload error:', err);
+    }
   };
 
   const handleJoin = () => {
@@ -107,8 +138,14 @@ function Chat({ username }) {
           <h2>{username} in Room: {room}</h2>
           <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {chat.map((msg, idx) => (
-              <div key={idx} className={`msg ${msg.user === username ? 'me' : ''}`}>
-                <strong>{msg.user}: </strong>{msg.message}
+              <div
+                key={idx}
+                className={`msg ${msg.user === username ? 'me' : ''}`}
+              >
+                <strong>{msg.user}: </strong>
+                <span
+                  dangerouslySetInnerHTML={{ __html: msg.message }}
+                />
               </div>
             ))}
             {typingUser && (
@@ -126,6 +163,16 @@ function Chat({ username }) {
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             />
             <button onClick={sendMessage}>Send</button>
+
+            <input
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+              accept="image/*"
+              style={{ marginLeft: '10px' }}
+            />
+            <button onClick={handleImageUpload} disabled={!image}>
+              Upload Image
+            </button>
           </div>
         </div>
       )}
