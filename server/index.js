@@ -1,5 +1,5 @@
 const express = require('express');
-const app = express(); // Only declare once here
+const app = express();
 
 const http = require('http');
 const { Server } = require('socket.io');
@@ -11,9 +11,9 @@ const passport = require('passport');
 require('dotenv').config();
 require('./config/passport');
 const mongoose = require('mongoose');
-
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const Message = require('./models/Message');
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('✅ MongoDB connected'))
@@ -23,23 +23,18 @@ const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/auth');
 
 app.use(cors());
-app.use(express.json()); // Important for reading JSON bodies
+app.use(express.json());
 
-// 🔐 Express session setup
 app.use(session({
-  secret: 'keyboard cat', // ⚠️ Replace with a strong secret in production
+  secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false
 }));
 
-// 🔐 Passport initialization
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 🛣️ Auth routes
 app.use('/api/auth', authRoutes);
-
-// --- Cloudinary setup ---
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -50,21 +45,17 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'chat_images',          // folder in your Cloudinary account
+    folder: 'chat_images',
     allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
   },
 });
 
 const upload = multer({ storage });
 
-// Upload route (uploads directly to Cloudinary)
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).send('No file uploaded');
-  // req.file.path contains the Cloudinary URL
   res.json({ url: req.file.path });
 });
-
-// --- HTTP + WebSocket setup ---
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -81,7 +72,6 @@ async function connectRabbitMQ() {
   channel = await conn.createChannel();
   await channel.assertQueue('chat');
 
-  // ✅ Consume messages and emit to WebSocket
   channel.consume('chat', (msg) => {
     const data = JSON.parse(msg.content.toString());
     io.to(data.room).emit('chat-message', data);
@@ -104,19 +94,61 @@ io.on('connection', (socket) => {
       user: 'System',
       message: `${username} joined the room`,
     });
+  });
 
-    socket.on('send-message', (data) => {
-      channel.sendToQueue('chat', Buffer.from(JSON.stringify({ ...data, room })));
-    });
+  socket.on('send-message', async (data) => {
+    const newMsg = new Message({ user: data.user, message: data.message, room: data.room });
+    await newMsg.save();
+    io.to(data.room).emit('chat-message', newMsg);
+  });
 
-    // Typing indicator events
-    socket.on('typing', ({ user, room }) => {
-      socket.to(room).emit('user-typing', { user });
-    });
+  socket.on('typing', ({ user, room }) => {
+    socket.to(room).emit('user-typing', { user });
+  });
 
-    socket.on('stop-typing', ({ user, room }) => {
-      socket.to(room).emit('user-stop-typing', { user });
-    });
+  socket.on('stop-typing', ({ user, room }) => {
+    socket.to(room).emit('user-stop-typing', { user });
+  });
+
+  socket.on('edit-message', async ({ messageId, newContent }) => {
+    try {
+      await Message.findByIdAndUpdate(messageId, {
+        message: newContent,
+        edited: true,
+      });
+      io.to(currentRoom).emit('message-edited', { messageId, newContent });
+    } catch (err) {
+      console.error('Edit error:', err);
+    }
+  });
+
+  socket.on('delete-message', async ({ messageId }) => {
+    try {
+      await Message.findByIdAndUpdate(messageId, {
+        message: '[deleted]',
+        deleted: true,
+      });
+      io.to(currentRoom).emit('message-deleted', { messageId });
+    } catch (err) {
+      console.error('Delete error:', err);
+    }
+  });
+
+  socket.on('react-message', async ({ messageId, emoji, by }) => {
+    try {
+      const message = await Message.findById(messageId);
+      if (!message) return;
+
+      const updatedReactions = message.reactions.filter(r => r.by !== by);
+      updatedReactions.push({ emoji, by });
+
+      message.reactions = updatedReactions;
+      await message.save();
+
+      io.to(currentRoom).emit('message-reacted', { messageId, reactions: updatedReactions });
+    } catch (err) {
+      console.error('Reaction error:', err);
+    }
   });
 
   socket.on('disconnect', () => {

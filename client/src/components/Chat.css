@@ -13,6 +13,18 @@
   display: flex;
   flex-direction: column;
   min-height: 80vh;
+  animation: fadeIn 0.6s ease-in-out; /* New: fadeIn animation */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Logout Button */
@@ -315,6 +327,7 @@
   }
 }
 
+/* Upload button styles */
 .upload-button {
   background: #6366f1;
   border: none;
@@ -346,4 +359,133 @@
   padding: 6px;
   margin-left: 8px;
   color: inherit;
+}
+
+/* Emoji reactions */
+.reactions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 18px;
+}
+.reaction {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.reaction:hover {
+  transform: scale(1.2);
+}
+
+/* Message options (edit, delete, emoji) */
+.msg-options {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.msg:hover .msg-options {
+  opacity: 1;
+}
+.msg-options button {
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  padding: 0;
+}
+.msg-options button:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.msg .edited-tag {
+  font-size: 12px;
+  color: #aaa;
+  margin-left: 4px;
+}
+.msg.deleted {
+  font-style: italic;
+  color: #888;
+}
+
+.chat-wrapper.dark .msg-options button {
+  color: #ccc;
+}
+.chat-wrapper.dark .msg-options button:hover {
+  color: #fff;
+}
+.chat-wrapper.dark .msg.deleted {
+  color: #bbb;
+}
+
+/* ==== NEW CONTEXT MENU STYLES ==== */
+.context-menu {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+  min-width: 120px;
+  animation: slideDown 0.2s ease-out;
+}
+
+.context-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.context-menu button:hover {
+  background: #f0f0f0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Additional responsive adjustments for smaller screens */
+@media (max-width: 600px) {
+  .chat-wrapper {
+    padding: 20px;
+    margin: 20px 10px;
+    min-height: 90vh;
+  }
+
+  .chat-box h2 {
+    font-size: 20px;
+  }
+
+  .chat-input input,
+  .login-box input {
+    font-size: 14px;
+    padding: 12px 14px;
+  }
+
+  .chat-input button,
+  .login-box button {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+
+  .msg {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
 }
