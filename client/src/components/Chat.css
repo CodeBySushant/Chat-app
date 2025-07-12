@@ -314,3 +314,36 @@
     top: 10px;
   }
 }
+
+.upload-button {
+  background: #6366f1;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.upload-button:hover {
+  background-color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.image-preview-container {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.upload-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  margin-left: 8px;
+  color: inherit;
+}

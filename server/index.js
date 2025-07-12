@@ -51,7 +51,7 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'chat_images',          // folder in your Cloudinary account
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
   },
 });
 
