@@ -1,17 +1,19 @@
 const express = require('express');
+const app = express(); // Only declare once here
+
 const http = require('http');
 const { Server } = require('socket.io');
 const amqp = require('amqplib');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const app = express();
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('passport');
 require('dotenv').config();
 require('./config/passport');
 const mongoose = require('mongoose');
+
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('✅ MongoDB connected'))
@@ -37,30 +39,30 @@ app.use(passport.session());
 // 🛣️ Auth routes
 app.use('/api/auth', authRoutes);
 
-// --- Multer Setup for File Uploads ---
+// --- Cloudinary setup ---
 
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname;
-    cb(null, uniqueName);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'chat_images',          // folder in your Cloudinary account
+    allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
   },
 });
 
 const upload = multer({ storage });
 
-// Upload route
+// Upload route (uploads directly to Cloudinary)
 app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).send('No file uploaded');
-  const fileUrl = `http://localhost:${PORT}/uploads/${req.file.filename}`;
-  res.json({ url: fileUrl });
+  // req.file.path contains the Cloudinary URL
+  res.json({ url: req.file.path });
 });
-
-// Serve uploaded files statically
-app.use('/uploads', express.static(uploadDir));
 
 // --- HTTP + WebSocket setup ---
 
