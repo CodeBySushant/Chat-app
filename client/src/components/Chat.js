@@ -128,11 +128,19 @@ function Chat({ username, darkMode }) {
 
   const handleDragOver = (e) => e.preventDefault();
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (room.trim()) {
+      try {
+        // Fetch chat history on joining
+        const res = await fetch(`http://localhost:5000/api/messages/${room}`);
+        const messages = await res.json();
+        setChat(messages);
+      } catch (err) {
+        alert('Failed to load chat history');
+      }
+
       socket.emit('join-room', { username, room });
       setJoined(true);
-      setChat([]);
     }
   };
 

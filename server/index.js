@@ -57,6 +57,18 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   res.json({ url: req.file.path });
 });
 
+// *** NEW: Route to fetch message history for a room ***
+app.get('/api/messages/:room', async (req, res) => {
+  const { room } = req.params;
+  try {
+    const messages = await Message.find({ room }).sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load messages' });
+  }
+});
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] }
