@@ -2,17 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import './Chat.css';
 import { FiPaperclip } from 'react-icons/fi';
+import { BsEmojiSmile } from 'react-icons/bs';
 import Picker from 'emoji-picker-react';
 
 const socket = io('http://localhost:5000');
 
-function Chat({ username }) {
+function Chat({ username, darkMode }) {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
   const [room, setRoom] = useState('');
   const [joined, setJoined] = useState(false);
   const [typingUser, setTypingUser] = useState(null);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [editingId, setEditingId] = useState(null);
   const [contextMenu, setContextMenu] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -38,10 +38,6 @@ function Chat({ username }) {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat]);
-
-  useEffect(() => {
-    localStorage.setItem('darkMode', darkMode);
-  }, [darkMode]);
 
   const handleTyping = (e) => {
     setMessage(e.target.value);
@@ -83,8 +79,7 @@ function Chat({ username }) {
   };
 
   const handleEmoji = () => {
-    setShowEmojiPicker(true);
-    setContextMenu(null);
+    setShowEmojiPicker(prev => !prev);
   };
 
   const onEmojiClick = (emojiData) => {
@@ -141,13 +136,6 @@ function Chat({ username }) {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.reload();
-  };
-
-  const toggleDarkMode = () => setDarkMode((prev) => !prev);
-
   return (
     <div
       className={`chat-wrapper ${darkMode ? 'dark' : ''}`}
@@ -155,12 +143,6 @@ function Chat({ username }) {
       onDragOver={handleDragOver}
       onClick={() => setContextMenu(null)}
     >
-      <button className="logout-button" onClick={handleLogout}>Logout</button>
-      <label className="dark-mode-toggle">
-        <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} />
-        <span className="toggle-switch"></span>
-      </label>
-
       {!joined ? (
         <div className="login-box">
           <h2>Welcome, {username}</h2>
@@ -189,7 +171,7 @@ function Chat({ username }) {
           {imagePreview && (
             <div className="image-preview-container">
               <img src={imagePreview} alt="preview" style={{ maxWidth: 200, borderRadius: 8 }} />
-              <button onClick={() => setImagePreview(null)} style={{ marginLeft: 8 }}>Cancel</button>
+              <button className="preview-cancel-button" onClick={() => setImagePreview(null)} style={{ marginLeft: 8 }}>Cancel</button>
             </div>
           )}
 
@@ -211,6 +193,15 @@ function Chat({ username }) {
               aria-label="Attach Image"
             >
               <FiPaperclip size={20} />
+            </button>
+
+            <button
+              className="emoji-button"
+              onClick={handleEmoji}
+              title="Add Emoji"
+              aria-label="Add Emoji"
+            >
+              <BsEmojiSmile size={20} />
             </button>
 
             <input

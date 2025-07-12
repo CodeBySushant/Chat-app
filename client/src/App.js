@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Chat from './components/Chat';
+import Sidebar from './components/Sidebar';
 
 function App() {
   const [user, setUser] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('username');
@@ -16,7 +18,6 @@ function App() {
       return;
     }
 
-    // Check for Google OAuth redirect
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     const username = params.get('username');
@@ -29,7 +30,19 @@ function App() {
     }
   }, []);
 
-  // 🔁 Switch between Login/Register screens
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(prev => !prev);
+  };
+
   if (!user) {
     return showRegister ? (
       <Register onSwitch={() => setShowRegister(false)} />
@@ -38,7 +51,17 @@ function App() {
     );
   }
 
-  return <Chat username={user} />;
+  return (
+    <div className={`app-container ${darkMode ? 'dark' : ''}`}>
+      <Sidebar
+        username={user}
+        onLogout={handleLogout}
+        darkMode={darkMode}
+        toggleDarkMode={toggleDarkMode}
+      />
+      <Chat username={user} darkMode={darkMode} />
+    </div>
+  );
 }
 
 export default App;
