@@ -61,8 +61,12 @@ async function connectRabbitMQ() {
 io.on('connection', (socket) => {
   console.log('🟢 New client connected:', socket.id);
 
+  let currentRoom = '';
+
   socket.on('join-room', ({ username, room }) => {
     socket.join(room);
+    currentRoom = room;
+
     console.log(`${username} joined room: ${room}`);
 
     socket.to(room).emit('chat-message', {
@@ -72,6 +76,15 @@ io.on('connection', (socket) => {
 
     socket.on('send-message', (data) => {
       channel.sendToQueue('chat', Buffer.from(JSON.stringify({ ...data, room })));
+    });
+
+    // ✅ Typing Indicator
+    socket.on('typing', ({ user, room }) => {
+      socket.to(room).emit('user-typing', { user });
+    });
+
+    socket.on('stop-typing', ({ user, room }) => {
+      socket.to(room).emit('user-stop-typing', { user });
     });
   });
 

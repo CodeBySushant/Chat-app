@@ -9,6 +9,7 @@ function Chat({ username }) {
   const [chat, setChat] = useState([]);
   const [room, setRoom] = useState('');
   const [joined, setJoined] = useState(false);
+  const [typingUser, setTypingUser] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode');
     return saved === 'true';
@@ -19,17 +20,46 @@ function Chat({ username }) {
       setChat((prev) => [...prev, data]);
     });
 
-    return () => socket.off('chat-message');
-  }, []);
+    socket.on('user-typing', ({ user }) => {
+      if (user !== username) {
+        setTypingUser(user);
+      }
+    });
+
+    socket.on('user-stop-typing', ({ user }) => {
+      if (user !== username) {
+        setTypingUser(null);
+      }
+    });
+
+    return () => {
+      socket.off('chat-message');
+      socket.off('user-typing');
+      socket.off('user-stop-typing');
+    };
+  }, [username]);
 
   useEffect(() => {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
+  let typingTimeout;
+  const handleTyping = (e) => {
+    setMessage(e.target.value);
+
+    socket.emit('typing', { user: username, room });
+
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+      socket.emit('stop-typing', { user: username, room });
+    }, 1000);
+  };
+
   const sendMessage = () => {
     if (!message.trim()) return;
-    socket.emit('send-message', { user: username, message });
+    socket.emit('send-message', { user: username, message, room });
     setMessage('');
+    socket.emit('stop-typing', { user: username, room });
   };
 
   const handleJoin = () => {
@@ -74,23 +104,25 @@ function Chat({ username }) {
         </div>
       ) : (
         <div className="chat-box">
-          <h2>
-            {username} in Room: {room}
-          </h2>
+          <h2>{username} in Room: {room}</h2>
           <div className="chat-messages" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             {chat.map((msg, idx) => (
               <div key={idx} className={`msg ${msg.user === username ? 'me' : ''}`}>
-                <strong>{msg.user}: </strong>
-                {msg.message}
+                <strong>{msg.user}: </strong>{msg.message}
               </div>
             ))}
+            {typingUser && (
+              <div className="typing-indicator">
+                <em>{typingUser} is typing...</em>
+              </div>
+            )}
           </div>
           <div className="chat-input" style={{ marginTop: '10px' }}>
             <input
               type="text"
               value={message}
               placeholder="Type a message..."
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleTyping}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             />
             <button onClick={sendMessage}>Send</button>
