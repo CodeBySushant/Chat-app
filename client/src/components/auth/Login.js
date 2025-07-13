@@ -12,7 +12,6 @@ function Login({ onLogin, onSwitch }) {
     e.preventDefault();
     setError('');
 
-    // Basic validation
     if (username.length < 3) {
       setError('Username must be at least 3 characters long');
       return;

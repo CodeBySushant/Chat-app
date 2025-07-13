@@ -5,10 +5,7 @@ import './Navbar.css';
 function Navbar({ onLogout, onThemeToggle }) {
   return (
     <nav className="navbar">
-      {/* Logo Left */}
       <div className="navbar-logo">Chat-App</div>
-
-      {/* Center Nav Links */}
       <div className="navbar-links">
         <NavLink to="/" end>
           Home
@@ -16,8 +13,6 @@ function Navbar({ onLogout, onThemeToggle }) {
         <NavLink to="/general">General Chat</NavLink>
         <NavLink to="/private">Private Chat</NavLink>
       </div>
-
-      {/* Right Buttons */}
       <div className="navbar-actions">
         <button className="theme-toggle" onClick={onThemeToggle}>
           Toggle Theme

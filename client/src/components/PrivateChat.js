@@ -1,4 +1,3 @@
-// src/components/PrivateChat.js
 import React from "react";
 
 const PrivateChat = () => {

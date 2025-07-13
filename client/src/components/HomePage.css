@@ -1,6 +1,6 @@
 .homepage {
   min-height: 100vh;
-  padding-top: 60px; /* To avoid overlapping the fixed navbar */
+  padding-top: 60px;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -54,21 +54,4 @@
   margin: 0 0.75rem;
   color: var(--link-color);
   text-decoration: none;
-}
-
-/* Light and Dark mode variables */
-.app-container {
-  --bg-color: #ffffff;
-  --text-color: #222;
-  --link-color: #007bff;
-  --footer-bg: #f5f5f5;
-  --footer-text: #555;
-}
-
-.app-container.dark {
-  --bg-color: #121212;
-  --text-color: #f1f1f1;
-  --link-color: #4dabf7;
-  --footer-bg: #1e1e1e;
-  --footer-text: #aaa;
 }

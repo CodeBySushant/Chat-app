@@ -5,8 +5,6 @@ import { FiPaperclip } from 'react-icons/fi';
 import { BsEmojiSmile } from 'react-icons/bs';
 import Picker from 'emoji-picker-react';
 
-const socket = io('http://localhost:5000');
-
 function Chat({ username, darkMode }) {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
@@ -20,19 +18,31 @@ function Chat({ username, darkMode }) {
   const fileInputRef = useRef(null);
   const chatEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    socket.on('chat-message', (data) => setChat((prev) => [...prev, data]));
-    socket.on('message-edited', ({ messageId, newContent }) => {
-      setChat(prev => prev.map(msg => msg._id === messageId ? { ...msg, message: newContent, edited: true } : msg));
+    socketRef.current = io('http://localhost:5000');
+    socketRef.current.on('chat-message', (data) => setChat((prev) => [...prev, data]));
+    socketRef.current.on('message-edited', ({ messageId, newContent }) => {
+      setChat((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, message: newContent, edited: true } : msg
+        )
+      );
     });
-    socket.on('message-deleted', ({ messageId }) => {
-      setChat(prev => prev.map(msg => msg._id === messageId ? { ...msg, message: '[deleted]', deleted: true } : msg));
+    socketRef.current.on('message-deleted', ({ messageId }) => {
+      setChat((prev) =>
+        prev.map((msg) =>
+          msg._id === messageId ? { ...msg, message: '[deleted]', deleted: true } : msg
+        )
+      );
     });
-    socket.on('user-typing', ({ user }) => user !== username && setTypingUser(user));
-    socket.on('user-stop-typing', ({ user }) => user !== username && setTypingUser(null));
+    socketRef.current.on('user-typing', ({ user }) => user !== username && setTypingUser(user));
+    socketRef.current.on('user-stop-typing', ({ user }) => user !== username && setTypingUser(null));
 
-    return () => socket.off();
+    return () => {
+      socketRef.current.disconnect();
+    };
   }, [username]);
 
   useEffect(() => {
@@ -41,23 +51,23 @@ function Chat({ username, darkMode }) {
 
   const handleTyping = (e) => {
     setMessage(e.target.value);
-    socket.emit('typing', { user: username, room });
+    socketRef.current.emit('typing', { user: username, room });
     clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
-      socket.emit('stop-typing', { user: username, room });
+      socketRef.current.emit('stop-typing', { user: username, room });
     }, 1000);
   };
 
   const sendMessage = () => {
     if (!message.trim()) return;
     if (editingId) {
-      socket.emit('edit-message', { messageId: editingId, newContent: message });
+      socketRef.current.emit('edit-message', { messageId: editingId, newContent: message });
       setEditingId(null);
     } else {
-      socket.emit('send-message', { user: username, message, room });
+      socketRef.current.emit('send-message', { user: username, message, room });
     }
     setMessage('');
-    socket.emit('stop-typing', { user: username, room });
+    socketRef.current.emit('stop-typing', { user: username, room });
   };
 
   const handleContextMenu = (e, msg) => {
@@ -74,12 +84,12 @@ function Chat({ username, darkMode }) {
   };
 
   const handleDelete = () => {
-    socket.emit('delete-message', { messageId: contextMenu.message._id });
+    socketRef.current.emit('delete-message', { messageId: contextMenu.message._id });
     setContextMenu(null);
   };
 
   const handleEmoji = () => {
-    setShowEmojiPicker(prev => !prev);
+    setShowEmojiPicker((prev) => !prev);
   };
 
   const onEmojiClick = (emojiData) => {
@@ -105,7 +115,7 @@ function Chat({ username, darkMode }) {
         body: formData,
       });
       const data = await res.json();
-      socket.emit('send-message', {
+      socketRef.current.emit('send-message', {
         user: username,
         message: `<img src="${data.url}" alt="uploaded" style="max-width:200px;" />`,
         room,
@@ -131,7 +141,6 @@ function Chat({ username, darkMode }) {
   const handleJoin = async () => {
     if (room.trim()) {
       try {
-        // Fetch chat history on joining
         const res = await fetch(`http://localhost:5000/api/messages/${room}`);
         const messages = await res.json();
         setChat(messages);
@@ -139,7 +148,7 @@ function Chat({ username, darkMode }) {
         alert('Failed to load chat history');
       }
 
-      socket.emit('join-room', { username, room });
+      socketRef.current.emit('join-room', { username, room });
       setJoined(true);
     }
   };

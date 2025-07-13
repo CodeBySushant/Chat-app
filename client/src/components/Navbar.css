@@ -1,4 +1,3 @@
-/* Fixed Navbar Styling */
 .navbar {
   position: fixed;
   top: 0;
@@ -15,28 +14,24 @@
   z-index: 999;
 }
 
-/* Logo */
 .navbar-logo {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--nav-text);
 }
 
-/* Nav Links */
 .navbar-links {
   display: flex;
   gap: 1.2rem;
   align-items: center;
 }
 
-/* Button Container on Right */
 .navbar-actions {
   display: flex;
   gap: 0.8rem;
   align-items: center;
 }
 
-/* Nav Links */
 .navbar-links a {
   text-decoration: none;
   color: var(--nav-text);
@@ -52,7 +47,6 @@
   color: var(--nav-active-text);
 }
 
-/* Button Styles (Same as Sidebar) */
 .theme-toggle,
 .logout-button {
   background-color: transparent;
@@ -68,22 +62,4 @@
 .logout-button:hover {
   background-color: var(--nav-hover-bg);
   color: var(--nav-active-text);
-}
-
-/* Light Theme */
-.app-container {
-  --nav-bg: #f2f2f2;
-  --nav-text: #333;
-  --nav-hover-bg: #ddd;
-  --nav-active-text: #000;
-  background-color: #ffffff;
-}
-
-/* Dark Theme */
-.app-container.dark {
-  --nav-bg: #1f1f1f;
-  --nav-text: #eee;
-  --nav-hover-bg: #333;
-  --nav-active-text: #fff;
-  background-color: #121212;
 }

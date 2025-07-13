@@ -59,7 +59,6 @@ function App() {
   return (
     <Router>
       <div className={`app-container ${darkMode ? 'dark' : ''}`}>
-        {/* Show top navbar on desktop, sidebar on mobile */}
         <div className="desktop-nav">
           <Navbar onLogout={handleLogout} onThemeToggle={toggleDarkMode} />
         </div>

@@ -10,22 +10,40 @@ function Register({ onSwitch }) {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage('');
 
-    const res = await fetch('http://localhost:5000/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
+    // Basic validation
+    if (username.length < 3) {
+      setMessage('Username must be at least 3 characters long');
+      setSuccess(false);
+      return;
+    }
+    if (password.length < 6) {
+      setMessage('Password must be at least 6 characters long');
+      setSuccess(false);
+      return;
+    }
 
-    const data = await res.json();
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (res.ok) {
-      setMessage('✅ Registration successful! You can now login.');
-      setSuccess(true);
-      setUsername('');
-      setPassword('');
-    } else {
-      setMessage(data.error || '❌ Registration failed');
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage('✅ Registration successful! You can now login.');
+        setSuccess(true);
+        setUsername('');
+        setPassword('');
+      } else {
+        setMessage(data.error || '❌ Registration failed');
+        setSuccess(false);
+      }
+    } catch (err) {
+      setMessage('Network error. Please try again.');
       setSuccess(false);
     }
   };

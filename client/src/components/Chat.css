@@ -1,19 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
 
-/* === Overall app container === */
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
-  font-family: 'Poppins', sans-serif;
-  transition: background 0.5s ease;
-}
-
-.app-container.dark {
-  background: linear-gradient(135deg, #1e293b 0%, #2d3748 100%);
-}
-
-/* === Chat wrapper styles === */
+/* Chat wrapper styles */
 .chat-wrapper {
   flex-grow: 1;
   margin: 24px;
@@ -53,7 +40,7 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 0 8px; /* Prevent input overflow */
+  padding: 0 8px;
 }
 
 .login-box h2 {
@@ -89,7 +76,7 @@
   padding: 16px 20px;
   font-size: 16px;
   width: 100%;
-  max-width: calc(100% - 12px); /* Prevent overflow */
+  max-width: calc(100% - 12px);
   box-sizing: border-box;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -523,10 +510,6 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .app-container {
-    flex-direction: column;
-  }
-
   .chat-wrapper {
     margin: 16px;
     padding: 20px;
