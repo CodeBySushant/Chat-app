@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Chat from './components/Chat';
 import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
+import HomePage from './components/HomePage';
+import PrivateChat from './components/PrivateChat';
+import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -40,7 +45,7 @@ function App() {
   };
 
   const toggleDarkMode = () => {
-    setDarkMode(prev => !prev);
+    setDarkMode((prev) => !prev);
   };
 
   if (!user) {
@@ -52,15 +57,31 @@ function App() {
   }
 
   return (
-    <div className={`app-container ${darkMode ? 'dark' : ''}`}>
-      <Sidebar
-        username={user}
-        onLogout={handleLogout}
-        darkMode={darkMode}
-        toggleDarkMode={toggleDarkMode}
-      />
-      <Chat username={user} darkMode={darkMode} />
-    </div>
+    <Router>
+      <div className={`app-container ${darkMode ? 'dark' : ''}`}>
+        {/* Show top navbar on desktop, sidebar on mobile */}
+        <div className="desktop-nav">
+          <Navbar onLogout={handleLogout} onThemeToggle={toggleDarkMode} />
+        </div>
+        <div className="mobile-nav">
+          <Sidebar
+            username={user}
+            onLogout={handleLogout}
+            darkMode={darkMode}
+            toggleDarkMode={toggleDarkMode}
+          />
+        </div>
+
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/general" element={<Chat username={user} darkMode={darkMode} />} />
+            <Route path="/private" element={<PrivateChat />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 

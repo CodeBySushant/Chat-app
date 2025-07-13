@@ -1,27 +1,164 @@
-/* src/App.css */
+/* Reset base layout */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  background: none;
+  background-color: var(--app-bg);
+}
+
+/* General Chat Styles */
 .chat-container {
-  max-width: 600px;
-  margin: 50px auto;
+  width: 100%;
+  max-width: 900px;
+  height: calc(100vh - 100px); /* fill screen minus navbar height & margins */
+  margin: 40px auto;
   padding: 20px;
   border: 2px solid #ccc;
   border-radius: 8px;
   font-family: Arial, sans-serif;
+  background-color: var(--chat-bg);
+  color: var(--chat-text);
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-box {
-  max-height: 300px;
+  flex: 1;
   overflow-y: auto;
   border: 1px solid #eee;
   padding: 10px;
   margin-bottom: 10px;
+  background-color: inherit;
 }
 
 .input-area {
   display: flex;
   gap: 10px;
+  padding-top: 10px;
 }
 
 input[type='text'] {
   flex: 1;
   padding: 10px;
+}
+
+/* Root App Layout */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navigation Bar Visibility */
+.desktop-nav {
+  display: none;
+}
+
+.mobile-nav {
+  display: block;
+}
+
+/* Content Area */
+.main-content {
+  flex: 1;
+  padding-top: 60px; /* space for fixed navbar */
+}
+
+/* Navbar Styles */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: var(--navbar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: var(--app-text);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar-links a.active {
+  border-bottom: 2px solid var(--app-text);
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.navbar-actions button {
+  background-color: transparent;
+  border: 1px solid var(--app-text);
+  padding: 6px 12px;
+  border-radius: 5px;
+  color: var(--app-text);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navbar-actions button:hover {
+  background-color: var(--app-text);
+  color: var(--app-bg);
+}
+
+/* Responsive Design */
+@media screen and (min-width: 768px) {
+  .desktop-nav {
+    display: block;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+
+  .main-content {
+    padding: 2rem;
+    padding-top: 80px;
+  }
+}
+
+/* Light Theme Variables */
+.app-container {
+  --app-bg: #ffffff;
+  --app-text: #222;
+  --chat-bg: #f9f9f9;
+  --chat-text: #000;
+  --navbar-bg: #f0f0f0;
+}
+
+/* Dark Theme Variables */
+.app-container.dark {
+  --app-bg: #121212;
+  --app-text: #f1f1f1;
+  --chat-bg: #1e1e1e;
+  --chat-text: #e0e0e0;
+  --navbar-bg: #1c1c1c;
 }
