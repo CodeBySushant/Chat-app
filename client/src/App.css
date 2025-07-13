@@ -77,63 +77,6 @@ html, body, #root {
   padding-top: 60px;
 }
 
-/* Navbar Styles */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background-color: var(--navbar-bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.5rem;
-  z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.navbar-links {
-  display: flex;
-  gap: 1.2rem;
-}
-
-.navbar-links a {
-  text-decoration: none;
-  color: var(--app-text);
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.navbar-links a.active {
-  border-bottom: 2px solid var(--app-text);
-}
-
-.navbar-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.navbar-actions button {
-  background-color: transparent;
-  border: 1px solid var(--app-text);
-  padding: 6px 12px;
-  border-radius: 5px;
-  color: var(--app-text);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.navbar-actions button:hover {
-  background-color: var(--app-text);
-  color: var(--app-bg);
-}
-
 /* Responsive Design */
 @media screen and (min-width: 768px) {
   .desktop-nav {

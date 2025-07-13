@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Chat from './components/Chat';
@@ -13,6 +13,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [showRegister, setShowRegister] = useState(false);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
+  const location = useLocation();
 
   useEffect(() => {
     const storedUser = localStorage.getItem('username');
@@ -56,32 +57,40 @@ function App() {
     );
   }
 
+  const isChatRoute = location.pathname === '/general' || location.pathname === '/private';
+
+  return (
+    <div className={`app-container ${darkMode ? 'dark' : ''} ${isChatRoute ? 'no-scroll' : ''}`}>
+      <div className="desktop-nav">
+        <Navbar onLogout={handleLogout} onThemeToggle={toggleDarkMode} darkMode={darkMode} />
+      </div>
+      <div className="mobile-nav">
+        <Sidebar
+          username={user}
+          onLogout={handleLogout}
+          darkMode={darkMode}
+          toggleDarkMode={toggleDarkMode}
+        />
+      </div>
+
+      <div className="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/general" element={<Chat username={user} darkMode={darkMode} />} />
+          <Route path="/private" element={<PrivateChat />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </div>
+  );
+}
+
+function AppWrapper() {
   return (
     <Router>
-      <div className={`app-container ${darkMode ? 'dark' : ''}`}>
-        <div className="desktop-nav">
-          <Navbar onLogout={handleLogout} onThemeToggle={toggleDarkMode} />
-        </div>
-        <div className="mobile-nav">
-          <Sidebar
-            username={user}
-            onLogout={handleLogout}
-            darkMode={darkMode}
-            toggleDarkMode={toggleDarkMode}
-          />
-        </div>
-
-        <div className="main-content">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/general" element={<Chat username={user} darkMode={darkMode} />} />
-            <Route path="/private" element={<PrivateChat />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
-      </div>
+      <App />
     </Router>
   );
 }
 
-export default App;
+export default AppWrapper;
