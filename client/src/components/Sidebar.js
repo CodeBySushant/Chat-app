@@ -1,33 +1,43 @@
 import React, { useState } from 'react';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 
 function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
-  const [open, setOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsOpen((prev) => !prev);
+  };
 
   return (
     <>
-      <button className="sidebar-toggle" onClick={() => setOpen(!open)}>
-        {open ? <FiX size={24} /> : <FiMenu size={24} />}
+      <button className="menu-toggle" onClick={toggleSidebar}>
+        {isOpen ? '✕' : '☰'}
       </button>
-
-      <aside className={`sidebar ${open ? 'open' : 'closed'}`}>
+      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <h2>Welcome, {username}</h2>
+          <div className="sidebar-username">{username}</div>
         </div>
-
-        <button
-          className="theme-btn"
-          onClick={() => toggleDarkMode()}
-          aria-label={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          {darkMode ? 'Light Theme' : 'Dark Theme'}
-        </button>
-
-        <button className="logout-btn" onClick={onLogout}>
-          Logout
-        </button>
-      </aside>
+        <div className="sidebar-links">
+          <NavLink to="/" exact activeClassName="active" onClick={toggleSidebar}>
+            Home
+          </NavLink>
+          <NavLink to="/general" activeClassName="active" onClick={toggleSidebar}>
+            General
+          </NavLink>
+          <NavLink to="/private" activeClassName="active" onClick={toggleSidebar}>
+            Private
+          </NavLink>
+        </div>
+        <div className="sidebar-actions">
+          <button onClick={toggleDarkMode}>
+            {darkMode ? 'Light Theme' : 'Dark Theme'}
+          </button>
+          <button className="logout" onClick={() => { onLogout(); toggleSidebar(); }}>
+            Logout
+          </button>
+        </div>
+      </div>
     </>
   );
 }
