@@ -22,10 +22,11 @@ function HomePage() {
       </section>
 
       <footer className="footer">
-        <p>Contact us: contact@chatapp.dev</p>
+        <p>Contact us: mesushant.official@gmail.com</p>
         <div className="social-icons">
-          <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/CodebySushant" target="_blank" rel="noopener noreferrer">GitHub</a>
           <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer">Twitter</a>
+          <a href="https://instagram.com/lifeofsushant" target="_blank" rel="noopener noreferrer">instagram</a>
         </div>
       </footer>
     </div>
