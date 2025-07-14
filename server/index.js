@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-
 const http = require('http');
 const { Server } = require('socket.io');
 const amqp = require('amqplib');
@@ -14,13 +13,14 @@ const mongoose = require('mongoose');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const Message = require('./models/Message');
+const authRoutes = require('./routes/auth');
+const friendsRoutes = require('./routes/friends');
+const usersRoutes = require('./routes/users');
+const authMiddleware = require('./middleware/auth');
 
 mongoose.connect(process.env.MONGO_URL)
   .then(() => console.log('✅ MongoDB connected'))
   .catch((err) => console.log('❌ MongoDB connection error:', err));
-
-const authRoutes = require('./routes/auth');
-const authMiddleware = require('./middleware/auth');
 
 app.use(cors());
 app.use(express.json());
@@ -35,6 +35,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/friends', friendsRoutes);
+app.use('/api/users', usersRoutes);
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -57,7 +59,6 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
   res.json({ url: req.file.path });
 });
 
-// *** NEW: Route to fetch message history for a room ***
 app.get('/api/messages/:room', async (req, res) => {
   const { room } = req.params;
   try {
@@ -66,6 +67,21 @@ app.get('/api/messages/:room', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to load messages' });
+  }
+});
+
+app.get('/api/messages/private/:room', authMiddleware, async (req, res) => {
+  const { room } = req.params;
+  try {
+    const [user1, user2] = room.split('_');
+    if (![user1, user2].includes(req.user.username)) {
+      return res.status(403).json({ error: 'Unauthorized access to private chat' });
+    }
+    const messages = await Message.find({ room }).sort({ timestamp: 1 });
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to load private messages' });
   }
 });
 
@@ -99,19 +115,30 @@ io.on('connection', (socket) => {
   socket.on('join-room', ({ username, room }) => {
     socket.join(room);
     currentRoom = room;
-
     console.log(`${username} joined room: ${room}`);
-
     socket.to(room).emit('chat-message', {
       user: 'System',
       message: `${username} joined the room`,
     });
   });
 
+  socket.on('join-private-room', ({ username, friend }) => {
+    const room = [username, friend].sort().join('_');
+    socket.join(room);
+    currentRoom = room;
+    console.log(`${username} joined private room: ${room}`);
+  });
+
   socket.on('send-message', async (data) => {
     const newMsg = new Message({ user: data.user, message: data.message, room: data.room });
     await newMsg.save();
     io.to(data.room).emit('chat-message', newMsg);
+  });
+
+  socket.on('send-private-message', async (data) => {
+    const newMsg = new Message({ user: data.user, message: data.message, room: data.room });
+    await newMsg.save();
+    io.to(data.room).emit('private-message', newMsg);
   });
 
   socket.on('typing', ({ user, room }) => {
@@ -150,13 +177,10 @@ io.on('connection', (socket) => {
     try {
       const message = await Message.findById(messageId);
       if (!message) return;
-
       const updatedReactions = message.reactions.filter(r => r.by !== by);
       updatedReactions.push({ emoji, by });
-
       message.reactions = updatedReactions;
       await message.save();
-
       io.to(currentRoom).emit('message-reacted', { messageId, reactions: updatedReactions });
     } catch (err) {
       console.error('Reaction error:', err);
@@ -172,7 +196,6 @@ async function startServer() {
   try {
     await connectRabbitMQ();
     console.log('✅ Connected to RabbitMQ');
-
     server.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });

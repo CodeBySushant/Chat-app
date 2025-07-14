@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* Navbar Container */
 .navbar {
   position: fixed;
   top: 0;
@@ -24,11 +23,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Navbar Logo */
 .navbar-logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--app-text);
   background: linear-gradient(90deg, #6366f1, #a855f7);
   -webkit-background-clip: text;
   background-clip: text;
@@ -46,14 +43,12 @@
   background-clip: text;
 }
 
-/* Navbar Links */
-.navbar-links {
+.nav-links {
   display: flex;
-  gap: 1.5rem;
-  position: relative;
+  gap: 1.2rem;
 }
 
-.navbar-links a {
+.nav-links a {
   text-decoration: none;
   color: var(--app-text);
   font-weight: 500;
@@ -62,16 +57,15 @@
   transition: color 0.3s ease-in-out;
 }
 
-.navbar-links a:hover {
+.nav-links a:hover {
   color: #6366f1;
 }
 
-.app-container.dark .navbar-links a:hover {
+.app-container.dark .nav-links a:hover {
   color: #818cf8;
 }
 
-/* Sliding underline effect */
-.navbar-links a::after {
+.nav-links a::after {
   content: '';
   position: absolute;
   bottom: -4px;
@@ -82,32 +76,29 @@
   transition: width 0.3s ease-in-out;
 }
 
-.navbar-links a:hover::after,
-.navbar-links a.active::after {
+.nav-links a:hover::after,
+.nav-links a.active::after {
   width: 100%;
 }
 
-.app-container.dark .navbar-links a::after {
+.app-container.dark .nav-links a::after {
   background: linear-gradient(90deg, #818cf8, #c084fc);
 }
 
-.navbar-links a.active {
+.nav-links a.active {
   color: #6366f1;
 }
 
-.app-container.dark .navbar-links a.active {
+.app-container.dark .nav-links a.active {
   color: #818cf8;
 }
 
-/* Navbar Actions */
-.navbar-actions {
+.nav-actions {
   display: flex;
   gap: 1rem;
 }
 
-.navbar-actions button {
-  position: relative;
-  overflow: hidden;
+.nav-actions button {
   background: linear-gradient(90deg, #6366f1, #a855f7);
   border: none;
   padding: 8px 16px;
@@ -119,40 +110,38 @@
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.navbar-actions button:hover {
+.nav-actions button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(99, 102, 241, 0.4);
 }
 
-.app-container.dark .navbar-actions button {
+.app-container.dark .nav-actions button {
   background: linear-gradient(90deg, #818cf8, #c084fc);
 }
 
-.app-container.dark .navbar-actions button:hover {
+.app-container.dark .nav-actions button:hover {
   box-shadow: 0 6px 12px rgba(129, 140, 248, 0.4);
 }
 
-/* Logout Button */
-.navbar-actions button.logout {
+.nav-actions button.logout {
   background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
-.navbar-actions button.logout:hover {
+.nav-actions button.logout:hover {
   background: linear-gradient(90deg, #b91c1c, #991b1b);
   box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
 }
 
-.app-container.dark .navbar-actions button.logout {
+.app-container.dark .nav-actions button.logout {
   background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
-.app-container.dark .navbar-actions button.logout:hover {
+.app-container.dark .nav-actions button.logout:hover {
   background: linear-gradient(90deg, #b91c1c, #991b1b);
   box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
 }
 
-/* Ripple effect on click */
-.navbar-actions button::after {
+.nav-actions button::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -166,15 +155,14 @@
   pointer-events: none;
 }
 
-.navbar-actions button:active::after {
+.nav-actions button:active::after {
   width: 200px;
   height: 200px;
   opacity: 0;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .navbar {
-    display: none; /* Handled by Sidebar on mobile */
+    display: none;
   }
 }

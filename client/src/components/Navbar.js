@@ -1,22 +1,36 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 
-function Navbar({ onLogout, onThemeToggle, darkMode }) {
+const Navbar = ({ onLogout, onThemeToggle, darkMode }) => {
   return (
     <nav className="navbar">
-      <div className="navbar-logo">ChatApp</div>
-      <div className="navbar-links">
-        <NavLink to="/" exact activeClassName="active">Home</NavLink>
-        <NavLink to="/general" activeClassName="active">General</NavLink>
-        <NavLink to="/private" activeClassName="active">Private</NavLink>
+      <div className="navbar-logo">Chat-app</div>
+      <div className="nav-links">
+        <NavLink to="/" className={({ isActive }) => (isActive ? 'active' : '')}>
+          Home
+        </NavLink>
+        <NavLink to="/general" className={({ isActive }) => (isActive ? 'active' : '')}>
+          General
+        </NavLink>
+        <NavLink to="/private" className={({ isActive }) => (isActive ? 'active' : '')}>
+          Private
+        </NavLink>
+        <NavLink to="/friends" className={({ isActive }) => (isActive ? 'active' : '')}>
+          Friends
+        </NavLink>
       </div>
-      <div className="navbar-actions">
-        <button onClick={onThemeToggle}>{darkMode ? 'Light Theme' : 'Dark Theme'}</button>
-        <button onClick={onLogout}>Logout</button>
+      <div className="nav-actions">
+        <button onClick={onThemeToggle} className="theme-toggle">
+          {darkMode ? '☀️ Light' : '🌙 Dark'}
+        </button>
+        <button onClick={onLogout} className="logout">
+          Logout
+        </button>
       </div>
     </nav>
   );
-}
+};
 
 export default Navbar;

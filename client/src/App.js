@@ -7,6 +7,7 @@ import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import PrivateChat from './components/PrivateChat';
+import Friends from './components/Friends';
 import './App.css';
 
 function App() {
@@ -73,12 +74,12 @@ function App() {
           toggleDarkMode={toggleDarkMode}
         />
       </div>
-
       <div className="main-content">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/general" element={<Chat username={user} darkMode={darkMode} />} />
-          <Route path="/private" element={<PrivateChat />} />
+          <Route path="/private" element={<PrivateChat username={user} darkMode={darkMode} />} />
+          <Route path="/friends" element={<Friends username={user} />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
