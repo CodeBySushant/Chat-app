@@ -58,9 +58,10 @@ function App() {
   }
 
   const isChatRoute = location.pathname === '/general' || location.pathname === '/private';
+  const isHomepage = location.pathname === '/';
 
   return (
-    <div className={`app-container ${darkMode ? 'dark' : ''} ${isChatRoute ? 'no-scroll' : ''}`}>
+    <div className={`app-container ${darkMode ? 'dark' : ''} ${isChatRoute ? 'no-scroll' : ''} ${isHomepage ? 'homepage-active' : ''}`}>
       <div className="desktop-nav">
         <Navbar onLogout={handleLogout} onThemeToggle={toggleDarkMode} darkMode={darkMode} />
       </div>

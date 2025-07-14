@@ -9,6 +9,10 @@ html, body, #root {
   background-color: var(--app-bg);
 }
 
+.app-container.sidebar-open {
+  overflow: hidden;
+}
+
 /* Root App Layout */
 .app-container {
   display: flex;
@@ -75,6 +79,7 @@ html, body, #root {
 .main-content {
   flex: 1;
   padding-top: 60px;
+  background: transparent;
 }
 
 /* Responsive Design */
@@ -90,5 +95,18 @@ html, body, #root {
   .main-content {
     padding: 2rem;
     padding-top: 80px;
+  }
+
+  /* Ensure desktop navbar stays visible when homepage-active */
+  .app-container.homepage-active .desktop-nav {
+    display: block;
+  }
+}
+
+/* Remove padding-top only on mobile (below 768px) when homepage-active */
+@media screen and (max-width: 767px) {
+  .app-container.homepage-active .main-content {
+    padding-top: 0;
+    background: transparent;
   }
 }

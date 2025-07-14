@@ -7,6 +7,12 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
+    document.body.style.overflow = !isOpen ? 'hidden' : 'auto';
+  };
+
+  const closeSidebar = () => {
+    setIsOpen(false);
+    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -14,26 +20,44 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
       <button className="menu-toggle" onClick={toggleSidebar}>
         {isOpen ? '✕' : '☰'}
       </button>
+
+      {isOpen && <div className="sidebar-overlay" onClick={closeSidebar}></div>}
+
       <div className={`sidebar ${isOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-username">{username}</div>
         </div>
+
         <div className="sidebar-links">
-          <NavLink to="/" exact activeClassName="active" onClick={toggleSidebar}>
+          <NavLink
+            to="/"
+            end
+            className={({ isActive }) => (isActive ? 'active' : '')}
+            onClick={closeSidebar}
+          >
             Home
           </NavLink>
-          <NavLink to="/general" activeClassName="active" onClick={toggleSidebar}>
+          <NavLink
+            to="/general"
+            className={({ isActive }) => (isActive ? 'active' : '')}
+            onClick={closeSidebar}
+          >
             General
           </NavLink>
-          <NavLink to="/private" activeClassName="active" onClick={toggleSidebar}>
+          <NavLink
+            to="/private"
+            className={({ isActive }) => (isActive ? 'active' : '')}
+            onClick={closeSidebar}
+          >
             Private
           </NavLink>
         </div>
+
         <div className="sidebar-actions">
-          <button onClick={toggleDarkMode}>
+          <button onClick={() => { toggleDarkMode(); closeSidebar(); }}>
             {darkMode ? 'Light Theme' : 'Dark Theme'}
           </button>
-          <button className="logout" onClick={() => { onLogout(); toggleSidebar(); }}>
+          <button className="logout" onClick={() => { onLogout(); closeSidebar(); }}>
             Logout
           </button>
         </div>

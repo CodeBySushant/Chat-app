@@ -4,9 +4,11 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -250px;
-  width: 250px;
-  height: 100%;
+  left: -100vw;
+  width: 100vw;
+  max-width: 250px;
+  height: 100vh;
+  overflow-y: auto;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   display: flex;
@@ -20,6 +22,16 @@
 
 .sidebar.open {
   left: 0;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 900;
 }
 
 .app-container.dark .sidebar {
