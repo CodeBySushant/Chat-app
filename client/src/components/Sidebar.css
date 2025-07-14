@@ -13,7 +13,7 @@
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 4rem 1.5rem 2rem; /* Increased top padding for menu toggle, added bottom padding */
   z-index: 1000;
   box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
   transition: left 0.3s ease-in-out;
@@ -32,6 +32,14 @@
   height: 100vh;
   background: rgba(0, 0, 0, 0.4);
   z-index: 900;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+.sidebar.open + .sidebar-overlay {
+  opacity: 1;
+  visibility: visible;
 }
 
 .app-container.dark .sidebar {
@@ -149,7 +157,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: auto;
+  padding-bottom: 1rem; /* Ensure buttons are fully visible */
 }
 
 .sidebar-actions button {
@@ -222,7 +230,8 @@
 /* Responsive Design */
 @media (min-width: 768px) {
   .sidebar,
-  .menu-toggle {
+  .menu-toggle,
+  .sidebar-overlay {
     display: none; /* Handled by Navbar on desktop */
   }
 }

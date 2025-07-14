@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 
@@ -7,13 +7,18 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);
-    document.body.style.overflow = !isOpen ? 'hidden' : 'auto';
   };
 
   const closeSidebar = () => {
     setIsOpen(false);
-    document.body.style.overflow = 'auto';
   };
+
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
+    return () => {
+      document.body.style.overflow = 'auto'; // Cleanup on unmount
+    };
+  }, [isOpen]);
 
   return (
     <>
