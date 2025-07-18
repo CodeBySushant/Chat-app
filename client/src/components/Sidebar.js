@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 
+// Shared navigation links
+const navLinks = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/general', label: 'General' },
+  { to: '/private', label: 'Private' },
+  { to: '/friends', label: 'Friends' },
+];
+
 function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -22,7 +30,12 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
 
   return (
     <>
-      <button className="menu-toggle" onClick={toggleSidebar}>
+      <button
+        className="menu-toggle"
+        onClick={toggleSidebar}
+        aria-label={isOpen ? 'Close menu' : 'Open menu'}
+        aria-expanded={isOpen}
+      >
         {isOpen ? '✕' : '☰'}
       </button>
 
@@ -34,35 +47,36 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
         </div>
 
         <div className="sidebar-links">
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) => (isActive ? 'active' : '')}
-            onClick={closeSidebar}
-          >
-            Home
-          </NavLink>
-          <NavLink
-            to="/general"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-            onClick={closeSidebar}
-          >
-            General
-          </NavLink>
-          <NavLink
-            to="/private"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-            onClick={closeSidebar}
-          >
-            Private
-          </NavLink>
+          {navLinks.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) => (isActive ? 'active' : '')}
+              onClick={closeSidebar}
+            >
+              {link.label}
+            </NavLink>
+          ))}
         </div>
 
         <div className="sidebar-actions">
-          <button onClick={() => { toggleDarkMode(); closeSidebar(); }}>
-            {darkMode ? 'Light Theme' : 'Dark Theme'}
+          <button
+            onClick={() => {
+              toggleDarkMode();
+              closeSidebar();
+            }}
+            className="theme-toggle"
+          >
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
           </button>
-          <button className="logout" onClick={() => { onLogout(); closeSidebar(); }}>
+          <button
+            className="logout"
+            onClick={() => {
+              onLogout();
+              closeSidebar();
+            }}
+          >
             Logout
           </button>
         </div>
@@ -71,4 +85,4 @@ function Sidebar({ username, onLogout, darkMode, toggleDarkMode }) {
   );
 }
 
-export default Sidebar;
+export default React.memo(Sidebar);
