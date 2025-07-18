@@ -15,7 +15,7 @@ const Friends = ({ username }) => {
 
   const token = localStorage.getItem('token');
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/friends', {
         headers: { Authorization: `Bearer ${token}` },
@@ -26,13 +26,12 @@ const Friends = ({ username }) => {
     } catch (err) {
       setError('Failed to load friends data');
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(
     debounce(async (query) => {
       if (query.trim() === '') {
